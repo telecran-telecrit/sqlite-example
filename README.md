@@ -1,0 +1,2 @@
+# sqlite
+Browser SQLite
