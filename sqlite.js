@@ -1,3 +1,9 @@
+if (Number.isFinite === undefined) {
+    Number.isFinite = function(num) {
+        return (num !== Number.POSITIVE_INFINITY) && (num !== Number.NEGATIVE_INFINITY);
+    }
+}
+
 function SQLite(database) {
     var connection = this;
     
