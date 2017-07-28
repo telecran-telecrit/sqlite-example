@@ -1,5 +1,6 @@
 # sqlite
-Browser SQLite
+SQLite implementation in the Browser
+Visit the [Demo Page](https://cdn.rawgit.com/mlaanderson/sqlite/e0ff0106/index.html)
 
 ## Usage
 ~~~~
