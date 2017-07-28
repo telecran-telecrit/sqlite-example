@@ -1,5 +1,12 @@
 # sqlite
 Browser SQLite
+
+## Usage
+~~~~
+<script src="https://cdn.rawgit.com/kripken/sql.js/2dc092a7/js/sql.js"></script>
+<script src="https://cdn.rawgit.com/mlaanderson/sqlite/571cbd09/sqlite.js"></script>
+~~~~
+
 ## Create a Memory Database
 ~~~~
 var db = new SQLite();
