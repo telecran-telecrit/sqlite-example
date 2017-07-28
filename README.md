@@ -68,6 +68,19 @@ stmt.exec('District of Columbia', 49, 646449);
 stmt.exec('Vermont', 50, 626630);
 stmt.exec('Wyoming', 51, 582658);
 
+var insStmt = db.createStatement('SELECT * FROM states WHERE State = ?');
+var results = insStmt.query('South Dakota');
+
+/*
+    results is:
+    [
+        {
+            "State": "South Dakota",
+            "Ranking": 46,
+            "Population": 844877
+        }
+    ]
+*/
 ~~~~
 
 ## Load and Store a Database
