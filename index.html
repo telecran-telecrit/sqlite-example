@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>SQLite Demo</title>
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+        <script src="https://cdn.rawgit.com/kripken/sql.js/2dc092a7/js/sql.js"></script>
+        <script src="sqlite.js"></script>
+        <script>
+            var data = {
+                "states": [
+                    { "State": "California", "Ranking": 1, "Population": 38332521 },
+                    { "State": "Texas", "Ranking": 2, "Population": 26448193 },
+                    { "State": "New York", "Ranking": 3, "Population": 19651127 },
+                    { "State": "Florida", "Ranking": 4, "Population": 19552860 },
+                    { "State": "Illinois", "Ranking": 5, "Population": 12882135 },
+                    { "State": "Pennsylvania", "Ranking": 6, "Population": 12773801 },
+                    { "State": "Ohio", "Ranking": 7, "Population": 11570808 },
+                    { "State": "Georgia", "Ranking": 8, "Population": 9992167 },
+                    { "State": "Michigan", "Ranking": 9, "Population": 9895622 },
+                    { "State": "North Carolina", "Ranking": 10, "Population": 9848060 },
+                    { "State": "New Jersey", "Ranking": 11, "Population": 8899339 },
+                    { "State": "Virginia", "Ranking": 12, "Population": 8260405 },
+                    { "State": "Washington", "Ranking": 13, "Population": 6971406 },
+                    { "State": "Massachusetts", "Ranking": 14, "Population": 6692824 },
+                    { "State": "Arizona", "Ranking": 15, "Population": 6626624 },
+                    { "State": "Indiana", "Ranking": 16, "Population": 6570902 },
+                    { "State": "Tennessee", "Ranking": 17, "Population": 6495978 },
+                    { "State": "Missouri", "Ranking": 18, "Population": 6044171 },
+                    { "State": "Maryland", "Ranking": 19, "Population": 5928814 },
+                    { "State": "Wisconsin", "Ranking": 20, "Population": 5742713 },
+                    { "State": "Minnesota", "Ranking": 21, "Population": 5420380 },
+                    { "State": "Colorado", "Ranking": 22, "Population": 5268367 },
+                    { "State": "Alabama", "Ranking": 23, "Population": 4833722 },
+                    { "State": "South Carolina", "Ranking": 24, "Population": 4774839 },
+                    { "State": "Louisiana", "Ranking": 25, "Population": 4625470 },
+                    { "State": "Kentucky", "Ranking": 26, "Population": 4395295 },
+                    { "State": "Oregon", "Ranking": 27, "Population": 3930065 },
+                    { "State": "Oklahoma", "Ranking": 28, "Population": 3850568 },
+                    { "State": "Connecticut", "Ranking": 29, "Population": 3596080 },
+                    { "State": "Iowa", "Ranking": 30, "Population": 3090416 },
+                    { "State": "Mississippi", "Ranking": 31, "Population": 2991207 },
+                    { "State": "Arkansas", "Ranking": 32, "Population": 2959373 },
+                    { "State": "Utah", "Ranking": 33, "Population": 2900872 },
+                    { "State": "Kansas", "Ranking": 34, "Population": 2893957 },
+                    { "State": "Nevada", "Ranking": 35, "Population": 2790136 },
+                    { "State": "New Mexico", "Ranking": 36, "Population": 2085287 },
+                    { "State": "Nebraska", "Ranking": 37, "Population": 1868516 },
+                    { "State": "West Virginia", "Ranking": 38, "Population": 1854304 },
+                    { "State": "Idaho", "Ranking": 39, "Population": 1612136 },
+                    { "State": "Hawaii", "Ranking": 40, "Population": 1404054 },
+                    { "State": "Maine", "Ranking": 41, "Population": 1328302 },
+                    { "State": "New Hampshire", "Ranking": 42, "Population": 1323459 },
+                    { "State": "Rhode Island", "Ranking": 43, "Population": 1051511 },
+                    { "State": "Montana", "Ranking": 44, "Population": 1015165 },
+                    { "State": "Delaware", "Ranking": 45, "Population": 925749 },
+                    { "State": "South Dakota", "Ranking": 46, "Population": 844877 },
+                    { "State": "Alaska", "Ranking": 47, "Population": 735132 },
+                    { "State": "North Dakota", "Ranking": 48, "Population": 723393 },
+                    { "State": "District of Columbia", "Ranking": 49, "Population": 646449 },
+                    { "State": "Vermont", "Ranking": 50, "Population": 626630 },
+                    { "State": "Wyoming", "Ranking": 51, "Population": 582658 },
+                ]
+            };
+
+            var db, tbody;
+
+            function populateTable(states) {
+                tbody.empty();
+                tbody.append(states.map(function(state) {
+                    return $("<tr><td>" + state.State + "</td><td class='num'>" + state.Ranking + "</td><td class='num'>" + state.Population.toLocaleString() + "</td></tr>");
+                }));
+            }
+
+            function doClick(e) {
+                var order = $(e.target).hasClass('asc') ? "desc" : "asc";
+                var field = $(e.target).attr('id');
+                $('#State, #Ranking, #Population').removeClass('asc').removeClass('desc');
+                $('#' + field).addClass(order);
+                populateTable(db.createStatement('SELECT * FROM states ORDER BY ' + field + ' ' + order).query());
+            }
+
+            $().ready(function() {
+                db = SQLite.from(data);
+                tbody = $('tbody');
+
+                var states = db.createStatement('SELECT * FROM states ORDER BY State ASC').query();
+                populateTable(states);
+                $('#State').addClass('asc');
+
+                var totalCalc = db.createStatement('SELECT SUM(Population) FROM states').query()[0]["SUM(Population)"];
+                $('#total').text(totalCalc.toLocaleString());
+
+                $('#State, #Ranking, #Population').click(doClick);
+            });
+        </script>
+        <style>
+            table {
+                border-collapse: collapse;
+                border: 1px solid black;
+            }
+
+            tr, td, th {
+                border: 1px solid black;
+            }
+
+            th {
+                text-align: center;
+                cursor: pointer;
+                width: 150px;
+            }
+
+            td.num {
+                text-align: right;
+            }
+
+            .asc::after {
+                content: "▲";
+            }
+
+            .desc::after {
+                content: "▼";
+            }
+        </style>
+    </head>
+    <body>
+        <table>
+            <thead>
+                <tr><th id="State">State</th><th id="Ranking">Ranking</th><th id="Population">Population</th></tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="2" class="num">TOTAL:</td>
+                    <td class="num" id="total"></td>
+                </tr>
+            </tfoot>
+        </table>
+    </body>
+</html>

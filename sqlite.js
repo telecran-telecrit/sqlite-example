@@ -115,12 +115,15 @@ function SQLite(database) {
     if (typeof database === 'string') {
         // this is probably a serialized array
         database = loadFromString(database);
-    } else if (database.__proto__ === Uint8Array.prototype) {
-        database = loadFromTypedArray
-    } else if (database.__proto__ === Uint8Array.prototype) {
-        database = loadFromArray(database)
-    } else if (typeof database === undefined) {
+    } else if ((typeof database === "undefined") || (database === null)) {
+        // this is an empty database
         database = new SQL.Database();
+    } else if (database.__proto__ === Uint8Array.prototype) {
+        // loading a database from a Uint8Array
+        database = loadFromTypedArray(database);
+    } else if (database.__proto__ === Array.prototype) {
+        // loading a database from an Array
+        database = loadFromArray(database)
     }
     
     this.createStatement = function(sql) {
@@ -136,6 +139,73 @@ function SQLite(database) {
         }
         return JSON.stringify(arr);
     }
+
+    this.toJSON = function() {
+        var result = {};
+
+        var tables = this.createStatement("SELECT name FROM sqlite_master WHERE type = ?").query("table");
+
+        for (var n = 0; n < tables.length; n++) {
+            result[tables[n].name] = []
+            var rows = this.createStatement("SELECT * FROM " + tables[n].name).query();
+            for (var r = 0; r < rows.length; r++) {
+                result[tables[n].name].push(rows[r]);
+            }
+        }
+
+        return result;
+    }
+}
+
+SQLite.from = function(json) {
+    var database = new SQLite();
+
+    for (var table in json) {
+        if ((json[table].__proto__ === Array.prototype) && (typeof json[table][0] === 'object')) {
+            // might be valid table, construct the structure
+            var tableData = json[table];
+            var structure = {};
+            for (var n = 0; n < tableData.length; n++) {
+                var row = tableData[n];
+                for (var column in row) {
+                    if (column in structure === false) {
+                        structure[column] = typeof row[column];
+                    }
+
+                    if (typeof row[column] !== typeof structure[column]) {
+                        if (typeof row[column] === 'string') {
+                            structure[column] = 'string';
+                        }
+                    }
+                }
+            }
+            
+            // create the table
+            var columns = Object.keys(structure);
+            var createSQL = "CREATE TABLE " + table + "(" + columns.map(function(key) {
+                return key + " " + (structure[key] === "number" ? "float" : "char");
+            }).join(", ") + ")";
+            database.createStatement(createSQL).exec();
+
+            // populate the table
+            var insertSQL = "INSERT INTO " + table + " VALUES(" + columns.map((function() { return "?"})).join(",") + ")";
+
+            var stmt = database.createStatement(insertSQL);
+            for (var n = 0; n < tableData.length; n++) {
+                var row = tableData[n];
+                var data = columns.map(function(col) {
+                    return row[col];
+                });
+                stmt.exec.apply(null, data);
+            }
+
+        } else {
+            console.warn(table + " is not an array of objects");
+            continue;
+        }
+    }
+
+    return database;
 }
 
 if (typeof SQL === 'undefined') {
