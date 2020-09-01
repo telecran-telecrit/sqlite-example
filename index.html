@@ -2,10 +2,11 @@
 
 <html>
     <head>
-        <title>SQLite Demo</title>
-        <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-        <script src="https://cdn.rawgit.com/kripken/sql.js/2dc092a7/js/sql.js"></script>
-        <script src="sqlite.js"></script>
+		<meta charset="UTF-8" />
+        <title>SQLite JS Demo</title>
+        <script src="./jquery-3.2.1.min.js"></script>
+        <script src="./sql.lite.js"></script><!--src="https://cdn.rawgit.com/kripken/sql.js/2dc092a7/js/sql.js"-->
+        <script src="./sqlite.js"></script>
         <script>
             var data = {
                 "states": [
@@ -100,11 +101,13 @@
                 border: 1px solid black;
             }
 
-            tr, td, th {
+            tr, td{
                 border: 1px solid black;
             }
 
             th {
+				border: 1px dashed black;
+				color: blue;
                 text-align: center;
                 cursor: pointer;
                 width: 150px;
@@ -124,6 +127,7 @@
         </style>
     </head>
     <body>
+        <p>Click on column header to sort</p>
         <table>
             <thead>
                 <tr><th id="State">State</th><th id="Ranking">Ranking</th><th id="Population">Population</th></tr>
