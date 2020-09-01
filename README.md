@@ -1,6 +1,5 @@
 # sqlite
-SQLite implementation in the Browser
-Visit the [Demo Page](https://cdn.rawgit.com/mlaanderson/sqlite/e0ff0106/index.html)
+To view SQLite implementation in the Browser visit the [Demo Page](https://telecran-telecrit.github.io/sqlite-example/)
 
 ## Usage
 ~~~~
